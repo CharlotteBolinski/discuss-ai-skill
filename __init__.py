@@ -5,6 +5,7 @@ from mycroft import MycroftSkill, intent_file_handler
 class DiscussAi(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
+        self.topics = ['feminism', 'work', 'social care']
 
     @intent_handler(IntentBuilder('WhatIsAi').require('What')
                     .require('Ai'))
@@ -25,6 +26,12 @@ class DiscussAi(MycroftSkill):
                               {'type': ai_topic})
         else:
             self.speak_dialog('did.not.get.generic')
+
+    @intent_handler('request.topic.intent')
+    def handle_request_icecream(self):
+        self.speak_dialog('request.topic')
+        selection = self.ask_selection(self.topics, 'what.topic')
+        self.speak_dialog('coming.right.up', {'topic': selection})
 
 def create_skill():
     return DiscussAi()

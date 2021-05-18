@@ -5,6 +5,7 @@ from mycroft import MycroftSkill, intent_file_handler
 class DiscussAi(MycroftSkill):
     def __init__(self):
         MycroftSkill.__init__(self)
+        self.learning = True
         self.topics = ['feminism', 'work', 'social care']
 
     @intent_handler(IntentBuilder('WhatIsAi').require('What')

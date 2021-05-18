@@ -3,36 +3,40 @@ from mycroft import MycroftSkill, intent_file_handler
 
 
 class DiscussAi(MycroftSkill):
-    def __init__(self):
-        MycroftSkill.__init__(self)
+       def __init__(self):
+        """ The __init__ method is called when the Skill is first constructed.
+        It is often used to declare variables or perform setup actions, however
+        it cannot utilise MycroftSkill methods as the class does not yet exist.
+        """
+        super().__init__()
         self.learning = True
-        self.topics = ['feminism', 'work', 'social care']
 
-    @intent_handler(IntentBuilder('WhatIsAi').require('What')
-                    .require('Ai'))
-    def handle_what_is(self, message):
-        self.speak_dialog('ai.description')
+    def initialize(self):
+        """ Perform any final setup needed for the skill here.
+        This function is invoked after the skill is fully constructed and
+        registered with the system. Intents will be registered and Skill
+        settings will be available."""
+        my_setting = self.settings.get('my_setting')
 
-   @intent_handler(IntentBuilder('TellMeMore')
-                    .require('More').require('Ai').one_of('Know', 'Tell').one_of('You', 'I'))
-    def handle_tell_me_more(self, message):
-        self.speak_dialog('question.ai.generic')
+    @intent_handler(IntentBuilder('ThankYouIntent').require('ThankYouKeyword'))
+    def handle_thank_you_intent(self, message):
+        """ This is an Adapt intent handler, it is triggered by a keyword."""
+        self.speak_dialog("welcome")
 
-    @intent_handler(IntentBuilder('MakeSuggestion').require('Suggestion')
-                    .optionally('Topic').optionally('I','My'))
-    def handle_do_you_like(self, message):
-        ai_topic = message.data.get('Topic')
-        if ai_topic is not None:
-            self.speak_dialog('topic.ai',
-                              {'type': ai_topic})
-        else:
-            self.speak_dialog('did.not.get.generic')
+    @intent_file_handler('HowAreYou.intent')
+    def handle_how_are_you_intent(self, message):
+        """ This is a Padatious intent handler.
+        It is triggered using a list of sample phrases."""
+        self.speak_dialog("how.are.you")
 
-    @intent_handler('request.topic.intent')
-    def handle_request_icecream(self):
-        self.speak_dialog('request.topic')
-        selection = self.ask_selection(self.topics, 'what.topic')
-        self.speak_dialog('coming.right.up', {'topic': selection})
+    @intent_handler(IntentBuilder('HelloWorldIntent')
+                    .require('HelloWorldKeyword'))
+    def handle_hello_world_intent(self, message):
+        """ Skills can log useful information. These will appear in the CLI and
+        the skills.log file."""
+        self.log.info("There are five types of log messages: "
+                      "info, debug, warning, error, and exception.")
+        self.speak_dialog("hello.world")
 
 def create_skill():
     return DiscussAi()
